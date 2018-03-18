@@ -1,23 +1,20 @@
-package de.javahippie.odometerbackend;
+package de.javahippie.odometerbackend.web3;
 
-import de.javahippie.odometer.web3.Odometer;
+import de.javahippie.odometerbackend.model.Car;
+import de.javahippie.odometerbackend.web3.Odometer;
 import java.math.BigInteger;
-import java.util.Arrays;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.web3j.abi.EventEncoder;
-import org.web3j.abi.TypeReference;
-import org.web3j.abi.datatypes.Address;
-import org.web3j.abi.datatypes.Event;
-import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
-import org.web3j.protocol.core.methods.request.EthFilter;
+import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
+import org.web3j.tx.RawTransactionManager;
+import org.web3j.tx.TransactionManager;
 
 /**
  * Entry point for the Web3 listener, which listens on the events emitted by our
@@ -31,7 +28,6 @@ public class Web3Listener {
 
     private static final String CONTRACT_ADDRESS = "0xa75175cd4445F34eA56f705BF3c45c0eEEE2E762";
 
-    private final Credentials credentials = null; // We only want to listen, not to authenticate anybody.
     private final Odometer odometer;
     private final Web3j web3;
 
@@ -39,10 +35,11 @@ public class Web3Listener {
     private static final DefaultBlockParameter LATEST_BLOCK = DefaultBlockParameter.valueOf("latest");
 
     @Autowired
-    public Web3Listener(Web3j web3) {
+    public Web3Listener(Web3j web3, Credentials credentials) {
         this.web3 = web3;
         this.odometer = Odometer.load(CONTRACT_ADDRESS,
-                this.web3, credentials,
+                this.web3, 
+                credentials,
                 ManagedTransaction.GAS_PRICE,
                 Contract.GAS_LIMIT);
     }
@@ -61,6 +58,17 @@ public class Web3Listener {
                 .asObservable()
                 .forEach(transferEvent
                         -> printAnsiRed(transferEvent._from + " transferred " + transferEvent.vin + " to " + transferEvent._to));
+    }
+    
+    public Car getCarByVin(String vin) throws Exception {
+        Car car = new Car();
+        car.setVin(vin);
+        
+        Tuple2<String, BigInteger> carRecord = odometer.getCar(vin).send();
+        car.setOwner(carRecord.getValue1());
+        car.setKilometers(carRecord.getValue2());
+        
+        return car;
     }
 
     public static final String ANSI_RED = "\u001B[31m";

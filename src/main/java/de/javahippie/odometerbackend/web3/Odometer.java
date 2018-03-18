@@ -1,4 +1,4 @@
-package de.javahippie.odometer.web3;
+package de.javahippie.odometerbackend.web3;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
