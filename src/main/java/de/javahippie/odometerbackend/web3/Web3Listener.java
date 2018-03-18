@@ -1,7 +1,6 @@
 package de.javahippie.odometerbackend.web3;
 
 import de.javahippie.odometerbackend.model.Car;
-import de.javahippie.odometerbackend.web3.Odometer;
 import java.math.BigInteger;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,6 @@ import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.tuples.generated.Tuple2;
 import org.web3j.tx.Contract;
 import org.web3j.tx.ManagedTransaction;
-import org.web3j.tx.RawTransactionManager;
-import org.web3j.tx.TransactionManager;
 
 /**
  * Entry point for the Web3 listener, which listens on the events emitted by our
@@ -26,7 +23,7 @@ import org.web3j.tx.TransactionManager;
 @Scope("singleton")
 public class Web3Listener {
 
-    private static final String CONTRACT_ADDRESS = "0xa75175cd4445F34eA56f705BF3c45c0eEEE2E762";
+    private static final String CONTRACT_ADDRESS = "0x1f77A6BDfdcdfE4e844B0D48DaF1C9aCcE3EBA8E";
 
     private final Odometer odometer;
     private final Web3j web3;
