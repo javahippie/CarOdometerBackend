@@ -6,17 +6,18 @@ pragma solidity ^0.4.21;
 contract Odometer {
     
     event Creation(
-        address indexed _from,
-        string vin
+        address indexed from,
+        string indexed vin
     );
     
     event Transfer(
-        address indexed _from,
-        address indexed _to,
-        string vin
+        address indexed from,
+        address indexed to,
+        string indexed vin
     );
     
     struct Car {
+        string vin;
         address owner;
         uint kilometers;
     }
@@ -32,6 +33,7 @@ contract Odometer {
     function createCar(string vin) public {
         assert(cars[vin].owner == 0x0);
         
+        cars[vin].vin = vin;
         cars[vin].owner = msg.sender;
         cars[vin].kilometers = 0;
         emit Creation(msg.sender, vin);
@@ -66,9 +68,9 @@ contract Odometer {
     /**
      * Returns the current data of the given car
      */
-    function getCar(string vin) public constant returns(address _owner, uint _kilometers) {
-        _owner = cars[vin].owner;
-        _kilometers = cars[vin].kilometers;
+    function getCar(string vin) public constant returns(address owner, uint kilometers) {
+        owner = cars[vin].owner;
+        kilometers = cars[vin].kilometers;
     }
     
     

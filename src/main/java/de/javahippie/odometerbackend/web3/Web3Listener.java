@@ -43,18 +43,17 @@ public class Web3Listener {
 
     @PostConstruct
     public void startListeningForCreation() {
-        odometer.creationEventObservable(FIRST_BLOCK, LATEST_BLOCK)
-                .asObservable()
-                .forEach(creationEvent
-                        -> printAnsiRed(creationEvent._from + " created " + creationEvent.vin));
+        odometer.creationEventObservable(FIRST_BLOCK, null)
+                .map(this::creationEventToString)
+                .forEach(this::printAnsiRed);
+        
     }
 
     @PostConstruct
     public void startListeningForDifferentStuff() {
-        odometer.transferEventObservable(FIRST_BLOCK, LATEST_BLOCK)
-                .asObservable()
-                .forEach(transferEvent
-                        -> printAnsiRed(transferEvent._from + " transferred " + transferEvent.vin + " to " + transferEvent._to));
+        odometer.transferEventObservable(FIRST_BLOCK, null)
+                .map(this::transferEventToString)
+                .forEach(this::printAnsiRed);
     }
     
     public Car getCarByVin(String vin) throws Exception {
@@ -73,6 +72,14 @@ public class Web3Listener {
 
     private void printAnsiRed(String value) {
         System.out.println(ANSI_RED + value + ANSI_RESET);
+    }
+    
+    private String creationEventToString(Odometer.CreationEventResponse creationEvent) {
+        return creationEvent.from + " created " + creationEvent.vin;
+    }
+    
+    private String transferEventToString(Odometer.TransferEventResponse transferEvent) {
+        return transferEvent.from + " transferred " + transferEvent.vin + " to " + transferEvent.to;
     }
 
 }
