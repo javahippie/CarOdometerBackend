@@ -7,13 +7,13 @@ contract Odometer {
     
     event Creation(
         address indexed from,
-        string indexed vin
+        string vin
     );
     
     event Transfer(
         address indexed from,
         address indexed to,
-        string indexed vin
+        string vin
     );
     
     struct Car {
