@@ -3,8 +3,11 @@ package de.javahippie.odometerbackend.web3;
 import de.javahippie.odometerbackend.model.Car;
 import java.math.BigInteger;
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
@@ -23,22 +26,17 @@ import org.web3j.tx.ManagedTransaction;
 @Scope("singleton")
 public class Web3Listener {
 
-    private static final String CONTRACT_ADDRESS = "0xb05dF5D936A35b09CA895bcAef9064cEd7B80418";
+    @Resource
+    public Environment env;
 
     private final Odometer odometer;
-    private final Web3j web3;
 
     private static final DefaultBlockParameter FIRST_BLOCK = DefaultBlockParameter.valueOf(BigInteger.ZERO);
     private static final DefaultBlockParameter LATEST_BLOCK = DefaultBlockParameter.valueOf("latest");
 
     @Autowired
-    public Web3Listener(Web3j web3, Credentials credentials) {
-        this.web3 = web3;
-        this.odometer = Odometer.load(CONTRACT_ADDRESS,
-                this.web3,
-                credentials,
-                ManagedTransaction.GAS_PRICE,
-                Contract.GAS_LIMIT);
+    public Web3Listener(Odometer odometer) {
+        this.odometer = odometer;
     }
 
     @PostConstruct
