@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.25;
 
 /**
  * Contract to store the mileage of a car 
@@ -24,7 +24,7 @@ contract Odometer {
     
     mapping (string => Car) cars;
     
-    function Odometer() public {}
+    constructor() public {}
     
     /**
      * Creates a track record of a new car. 
