@@ -54,17 +54,6 @@ public class Web3Listener {
                 .forEach(this::printAnsiRed);
     }
 
-    public Car getCarByVin(String vin) throws Exception {
-        Car car = new Car();
-        car.setVin(vin);
-
-        Tuple2<String, BigInteger> carRecord = odometer.getCar(vin).send();
-        car.setOwner(carRecord.getValue1());
-        car.setKilometers(carRecord.getValue2());
-
-        return car;
-    }
-
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001B[0m";
 

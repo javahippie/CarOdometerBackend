@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tuples.generated.Tuple2;
 
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -30,25 +31,23 @@ import java.util.UUID;
 @RestController
 public class CarController {
 
-    private final Web3Listener listener;
     private final Odometer odometer;
     private final Map<String, TransactionReceipt> transactions;
 
     @Autowired
-    public CarController(Web3Listener listener, Odometer odometer) {
-        this.listener = listener;
+    public CarController(Odometer odometer) {
         this.odometer = odometer;
         this.transactions = new HashMap<>();
     }
 
     @RequestMapping(value = "/car", method = RequestMethod.GET)
     public ResponseEntity<Car> fetchCar(@RequestParam("vin") String vin) throws Exception {
-        return ResponseEntity.ok(listener.getCarByVin(vin));
+        return ResponseEntity.ok(this.getCarByVin(vin));
     }
 
     @RequestMapping(value = "/tx", method = RequestMethod.GET)
     public ResponseEntity<TransactionReceipt> getTransactionReceipt(@RequestParam("uuid") String uuid) {
-        if(transactions.containsKey(uuid)) {
+        if (transactions.containsKey(uuid)) {
             return ResponseEntity.ok(transactions.get(uuid));
         } else {
             return ResponseEntity.notFound().build();
@@ -71,6 +70,17 @@ public class CarController {
                 .sendAsync()
                 .whenComplete((transactionReceipt, throwable) -> transactions.put(uuid, transactionReceipt));
         return ResponseEntity.accepted().body(uuid);
+    }
+
+    private Car getCarByVin(String vin) throws Exception {
+        Car car = new Car();
+        car.setVin(vin);
+
+        Tuple2<String, BigInteger> carRecord = odometer.getCar(vin).send();
+        car.setOwner(carRecord.getValue1());
+        car.setKilometers(carRecord.getValue2());
+
+        return car;
     }
 
     private String generateUUID() {
